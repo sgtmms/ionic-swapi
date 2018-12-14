@@ -2,6 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { SwapiService } from '../swapi.service';
 import { AppStateService } from '../app-state.service';
 
+interface itemDisplay {
+  title: string;
+  note: string;
+  icon: string;
+};
+
 @Component({
   selector: 'app-list',
   templateUrl: 'list.page.html',
@@ -21,8 +27,12 @@ export class ListPage implements OnInit {
     'bluetooth',
     'build'
   ];
-  public items: Array<{ title: string; note: string; icon: string }> = [];
-  constructor(private swapiSvc: SwapiService, public appStateSvc: AppStateService) {
+  //public items: Array<{ title: string; note: string; icon: string }> = [];
+  //public items: Array<itemDisplay> = [];
+  public items: itemDisplay[] = [];
+  //public items: any[] = [];
+  constructor(private planetSvc: SwapiService, private appStateSvc: AppStateService) {
+
     // for (let i = 1; i < 11; i++) {
     //   this.items.push({
     //     title: 'Item ' + i,
@@ -30,23 +40,28 @@ export class ListPage implements OnInit {
     //     icon: this.icons[Math.floor(Math.random() * this.icons.length)]
     //   });
     // }
+
   }
 
   ngOnInit() {
-    
-    this.swapiSvc.getListOfPlanets().subscribe(
+
+    this.planetSvc.getPlanets().subscribe(
       data => {
+        console.log('Got my data');
         console.log(data);
-       // this.items = (<any> data).reduce((acc, x) => [...acc, ...x.results.map(y => ({title: y.name}))], []);
-        this.items = [...this.items, ...(<any>data).results
-          //.filter(x => x.films.length > 0)
-          .map(x => ({ title: x.name, ...x }))];
-        //this.items = this.items.filter(x => x.title.startsWith('E'));
-        console.log(this.items);
-        this.items.sort((a,b) => (a.title.toLowerCase() > b.title.toLowerCase()) ? 1 : ((b.title.toLowerCase() > a.title.toLowerCase()) ? -1 : 0));
+
+        this.items = [...this.items, ...(<any> data).results.map(x => ({
+          title: x.name
+          , note: x.gravity
+          , icon: 'planet'
+        }))];
+
+        //this.items.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : (a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 0)));
+        this.items.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 :  -1));
       }
-      , error => console.log(error)
+    , error => console.log(error)
     );
+    
   }
   // add back when alpha.4 is out
   // navigate(item) {

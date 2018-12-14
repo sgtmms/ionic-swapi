@@ -7,5 +7,5 @@ export class AppStateService {
 
   constructor() { }
 
-  title: string = "List";
+  public title: string = "Planet List";
 }
